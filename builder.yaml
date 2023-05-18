@@ -9,9 +9,6 @@ spec:
       command:
         - /bin/cat
       tty: true
-      volumeMounts:
-        - mountPath: "/root/.m2"
-          name: maven-cache
     - name: kubectl
       image: joshendriks/alpine-k8s
       command:
@@ -22,21 +19,3 @@ spec:
       command:
         - /busybox/cat
       tty: true
-      volumeMounts:
-        - name: kaniko-secret
-          mountPath: /kaniko/.docker
-        - mountPath: "/cache"
-          name: kaniko-cache
-  volumes:
-    - name: kaniko-secret
-      secret:
-        secretName: harbor-reg
-        items:
-          - key: .dockerconfigjson
-            path: config.json
-    - name: maven-cache
-      persistentVolumeClaim:
-        claimName: jenkins-maven-cache
-    - name: kaniko-cache
-      persistentVolumeClaim:
-        claimName: kaniko-cache
