@@ -1,8 +1,5 @@
 pipeline {
 
-  options {
-  }
-
   agent {
     kubernetes {
       yamlFile 'builder.yaml'
