@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kaniko
+spec:
+  containers:
+    - name: maven
+      image: maven:3.6.2-jdk-11
+      command:
+        - /bin/cat
+      tty: true
+      volumeMounts:
+        - mountPath: "/root/.m2"
+          name: maven-cache
+    - name: kubectl
+      image: joshendriks/alpine-k8s
+      command:
+        - /bin/cat
+      tty: true
+    - name: kaniko
+      image: gcr.io/kaniko-project/executor:debug
+      command:
+        - /busybox/cat
+      tty: true
+      volumeMounts:
+        - name: kaniko-secret
+          mountPath: /kaniko/.docker
+        - mountPath: "/cache"
+          name: kaniko-cache
+  volumes:
+    - name: kaniko-secret
+      secret:
+        secretName: harbor-reg
+        items:
+          - key: .dockerconfigjson
+            path: config.json
+    - name: maven-cache
+      persistentVolumeClaim:
+        claimName: jenkins-maven-cache
+    - name: kaniko-cache
+      persistentVolumeClaim:
+        claimName: kaniko-cache
